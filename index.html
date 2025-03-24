@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Interview Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Interview Assistant</h1>
+        <input type="text" id="interviewTopic" placeholder="Enter interview topic (e.g., Frontend Developer)">
+        <button id="startInterview">Start Interview</button>
+        
+        <!-- Question Section -->
+        <div id="questionSection" style="display: none;">
+            <h2>Technical Questions</h2>
+            <div id="technicalQuestions" class="questions-container"></div>
+
+            <h2>HR Questions</h2>
+            <div id="hrQuestions" class="questions-container"></div>
+
+            <button id="submitAnswers" style="display: none;">Submit Answers</button>
+        </div>
+
+        <!-- Bookmarked Questions Section -->
+        <div id="bookmarkSection">
+            <h2>Your Bookmarked Questions</h2>
+            <div id="bookmarkedQuestions">
+                <p>No bookmarks yet.</p>
+            </div>
+        </div>
+
+        <!-- Score Section -->
+        <div id="scoreSection" style="display: none;">
+            <h2>Score Summary</h2>
+            <div id="loading" style="display: none;">Evaluating answers...</div>
+            <table id="scoreTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Question</th>
+                        <th>Score</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <button id="nextQuestions" style="display: none;">Next Questions</button>
+        </div>
+
+        <!-- Stop Interview Button -->
+        <button id="stopInterview" style="display: none;">Stop Interview</button>
+        <!-- Add loading animation to HTML -->
+<div id="loading" class="loading" style="display: none;">
+    <div class="spinner"></div>
+    <p>Generating questions...</p>
+</div>
+    </div>
+
+    <script src="script.js" type="module"></script>
+</body>
+</html>
