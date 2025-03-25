@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const GEMINI_API_KEY = 'AIzaSyBlPQqUB4dveIKl3c9PebtjYqY_2O_m0dU'; // Replace with your API key
+    const GEMINI_API_KEY = 'AIzaSyCeOiXeF6ClGM0jUFiaYnaAEnv3z5-8aCc'; // Replace with your API key
     const startButton = document.getElementById('startInterview');
     const submitButton = document.getElementById('submitAnswers');
     const nextButton = document.getElementById('nextQuestions');
@@ -12,9 +12,110 @@ document.addEventListener("DOMContentLoaded", function () {
     const scoreSection = document.getElementById('scoreSection');
     const scoreTableBody = document.querySelector("#scoreTable tbody");
 
-    const bookmarkList = document.getElementById('bookmarkList');  // For displaying bookmarked questions
-    let bookmarks = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+    //////// bookmark sahil start
+    const bookmarkButton = document.getElementById("showBookmarks");
+    const bookmarkListDiv = document.getElementById("bookmarkList");
 
+    function getCookie(name) {
+        let cookieArr = document.cookie.split("; ");
+        for (let cookie of cookieArr) {
+            let [key, value] = cookie.split("=");
+            if (key === name) {
+                return decodeURIComponent(value);
+            }
+        }
+        return null;
+    }    
+
+    function getBookmarksFromCookies() {
+        try {
+            let jsonBookmarks = getCookie("bookmarks");
+            if (jsonBookmarks) {
+                let bookmarksArray = JSON.parse(jsonBookmarks);
+                console.log("Parsed Bookmarks:", bookmarksArray);
+                return bookmarksArray;
+            } else {
+                console.log("No bookmarks found.");
+                return [];
+            }
+        } catch (error) {
+            console.error("Error parsing bookmarks JSON:", error);
+            return [];
+        }
+    }
+
+    // Retrieve existing bookmarks from cookies
+    let bookmarks = getBookmarksFromCookies();
+
+    // Add event listener for toggling bookmark visibility
+    bookmarkButton.addEventListener("click", function () {
+        bookmarkListDiv.style.display = bookmarkListDiv.style.display === "none" ? "block" : "none";
+    });    
+
+    // Handle bookmark icon click dynamically
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.closest('.bookmark-icon')) {
+            const icon = e.target.closest('.bookmark-icon');
+            const id = icon.dataset.id;
+            const questionText = icon.parentNode.querySelector('p').innerText;
+
+            // Toggle the bookmark functionality
+            if (bookmarks.some(b => b.id === id)) {
+                bookmarks = bookmarks.filter(b => b.id !== id);
+                icon.classList.remove('bookmarked'); // Unbookmark
+                icon.querySelector('i').classList.remove('fa-solid');
+                icon.querySelector('i').classList.add('fa-regular');
+            } else {
+                bookmarks.push({ id, question: questionText }); // Add to bookmarks
+                icon.classList.add('bookmarked'); // Bookmark
+                icon.querySelector('i').classList.remove('fa-regular');
+                icon.querySelector('i').classList.add('fa-solid');
+            }
+
+            updateBookmarksList(); // Update bookmarks display
+            // Save bookmarks to cookies
+            document.cookie = `bookmarks=${JSON.stringify(bookmarks)}; path=/`;
+        }
+    });
+
+    // Function to update the bookmarks display in the list
+    function updateBookmarksList() {
+        bookmarkListDiv.innerHTML = ''; // Clear existing list
+
+        if (bookmarks.length > 0) {
+            bookmarks.forEach(bookmark => {
+                const questionItem = document.createElement("div");
+                questionItem.classList.add("bookmark-item");
+                questionItem.innerHTML = `
+                    <p>${bookmark.question}</p>
+                    <span class="remove-bookmark" data-id="${bookmark.id}">Remove</span>
+                `;
+                bookmarkListDiv.appendChild(questionItem);
+            });
+        } else {
+            bookmarkListDiv.innerHTML = '<p>No bookmarks added. Bookmark questions during your interview for quick review later.</p>';
+        }
+    }
+
+    // Handle bookmark removal in the list
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.classList.contains('remove-bookmark')) {
+            const id = e.target.dataset.id;
+            bookmarks = bookmarks.filter(b => b.id !== id);
+            updateBookmarksList();
+            // Update icons in the question section
+            const bookmarkIcon = document.querySelector(`.bookmark-icon[data-id="${id}"]`);
+            if (bookmarkIcon) {
+                bookmarkIcon.classList.remove('bookmarked');
+            }
+            document.cookie = `bookmarks=${JSON.stringify(bookmarks)}; path=/`;
+        }
+    });
+
+    // Initial update of bookmarks list when the page loads
+    updateBookmarksList();
+
+    ///////// bookmark end
 
     // Rate limiting configuration
     const REQUEST_DELAY = 2000; // 2 seconds between requests
@@ -169,78 +270,23 @@ document.addEventListener("DOMContentLoaded", function () {
         nextButton.disabled = false;
     }
 
-    // Function to set a cookie (with expiration)
-    function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Cookie expiration
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = `${name}=${value};${expires};path=/`;
-    }
-
-    // Function to get a cookie by name
-    function getCookie(name) {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith(name + '=')) {
-                return cookie.substring(name.length + 1);
-            }
-        }
-        return "";
-    }
-
-    function toggleBookmark(question, id, icon) {
-        let bookmarkedQuestions = JSON.parse(decodeURIComponent(getCookie("bookmarks") || "[]"));
-    
-        if (bookmarkedQuestions.includes(question)) {
-            bookmarkedQuestions = bookmarkedQuestions.filter(q => q !== question);
-            icon.classList.remove("fas");
-            icon.classList.add("far");
-        } else {
-            bookmarkedQuestions.push(question);
-            icon.classList.remove("far");
-            icon.classList.add("fas");
-        }
-    
-        setCookie("bookmarks", encodeURIComponent(JSON.stringify(bookmarkedQuestions)), 7);
-    }
-    
-
-    function restoreBookmarks() {
-        const bookmarkedQuestions = JSON.parse(decodeURIComponent(getCookie("bookmarks") || "[]"));
-        
-        document.querySelectorAll('.question').forEach(questionElement => {
-            const questionText = questionElement.querySelector('p').innerText.split(": ")[1];
-            const bookmarkIcon = questionElement.querySelector('.bookmark-icon');
-    
-            if (bookmarkedQuestions.includes(questionText)) {
-                bookmarkIcon.classList.remove("far");
-                bookmarkIcon.classList.add("fas");
-            }
-        });
-    }
-    
-
-    window.onload = restoreBookmarks;
-    window.toggleBookmark = toggleBookmark;
-
     // Create Question Element
     function createQuestionElement(question, id, questionNumber) {
-        const bookmarkedQuestions = JSON.parse(getCookie("bookmarks") || "[]");
-        const isBookmarked = bookmarkedQuestions.includes(question);
-
         return `
             <div class="question">
                 <p><strong>Question ${questionNumber}:</strong> ${question}</p>
                 <textarea id="answer-${id}" placeholder="Type your answer here..." rows="3"></textarea>
-                <!-- Bookmark Icon with dynamic class -->
-                <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark bookmark-icon" aria-label="Bookmark this question" 
-   onclick="toggleBookmark('${question}', '${id}', this)"></i>
+                
+                <!----- bookmark icon ----------->
+                <span class="bookmark-icon" data-id="${id}">
+                <i class="${bookmarks.some(b => b.id === id) ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                </span>
+
                 <div id="feedback-${id}" class="feedback"></div>
             </div>
         `;
     }
-
+    
     // Submit Answers
     async function submitAnswers() {
         loadingDiv.style.display = 'block';

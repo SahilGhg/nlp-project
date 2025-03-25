@@ -126,23 +126,44 @@ textarea {
 }
 
 /*--------------------- bookmark -----------------------*/
+.bookmark {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
 
 .bookmark-icon {
     color: gray;
     cursor: pointer;
     font-size: 20px;
     margin-left: 10px;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.bookmark-icon.fas {
-    color: #FF6347;
+.bookmarked i {
+    color: #ffcc00; 
 }
 
 #bookmarkSection {
-    padding: 20px;
-    border: 1px solid #ccc;
     margin-top: 20px;
-    background-color: #f9f9f9;
+}
+
+.hidden {
+    display: none;
+}
+
+.bookmark-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+.remove-bookmark {
+    color: red;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
 @media (max-width: 768px) {
