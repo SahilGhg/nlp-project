@@ -11,6 +11,27 @@
     <div class="container">
         <h1>Smart Interview Assistant</h1>
         <input type="text" id="interviewTopic" placeholder="Enter interview topic (e.g., Frontend Developer)">
+        <!-- Add this near your start button -->
+<div class="category-selection">
+    <label for="techCategory">Technical Category:</label>
+    <select id="techCategory">
+        <option value="general">General</option>
+        <option value="frontend">Frontend</option>
+        <option value="backend">Backend</option>
+        <option value="fullstack">Full Stack</option>
+        <option value="datascience">Data Science</option>
+        <option value="Amazon">Amazon based</option>
+        <option value="TCS">TCS based</option>
+    </select>
+    
+    <label for="hrCategory">HR Category:</label>
+    <select id="hrCategory">
+        <option value="general">General</option>
+        <option value="behavioral">Behavioral</option>
+        <option value="situational">Situational</option>
+        <option value="leadership">Leadership</option>
+    </select>
+</div>
         <button id="startInterview">Start Interview</button>
         
         <!-- Question Section -->
@@ -47,18 +68,27 @@
                 <tbody></tbody>
             </table>
 
+            <!-- Performance Analysis Section -->
+            <div id="performanceAnalysis" class="performance-analysis-container" style="display: none;">
+                <h3>Performance Breakdown</h3>
+                <div class="bar-graph-container" id="performanceGraph"></div>
+                <div class="analysis-details" id="analysisDetails"></div>
+            </div>
+
             <button id="nextQuestions" style="display: none;">Next Questions</button>
         </div>
 
         <!-- Stop Interview Button -->
         <button id="stopInterview" style="display: none;">Stop Interview</button>
-        <!-- Add loading animation to HTML -->
-<div id="loading" class="loading" style="display: none;">
-    <div class="spinner"></div>
-    <p>Generating questions...</p>
-</div>
+        <!-- Add this button next to your stop button -->
+<button id="downloadPDF" style="display: none;">Download Report</button>
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating questions...</p>
+        </div>
     </div>
-
-    <script src="script.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
